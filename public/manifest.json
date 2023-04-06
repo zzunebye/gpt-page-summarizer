@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "ChatGPT Summarizer",
+  "version": "0.1.0",
+  "description": "Summarize articles using ChatGPT",
+  "permissions": ["activeTab", "storage"],
+  "action": {
+    "default_icon": "logo128.png",
+    "default_popup": "index.html"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "options_ui": {
+    "page": "src/options/index.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "128": "logo128.png",
+    "48": "logo48.png"
+  }
+}
