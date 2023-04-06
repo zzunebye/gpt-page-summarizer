@@ -3,7 +3,7 @@
   "name": "ChatGPT Summarizer",
   "version": "0.1.0",
   "description": "Summarize articles using ChatGPT",
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["activeTab", "storage", "notifications"],
   "action": {
     "default_icon": "logo128.png",
     "default_popup": "index.html"
