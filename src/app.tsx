@@ -165,7 +165,10 @@ export const App: FunctionComponent = () => {
       <div class="p-4 w-96 flex flex-col" style={"height: 32rem"}>
         <div class={"flex flex-row mb-4 justify-between"}>
           <h1 class="text-xl">ChatGPT Summarizer</h1>
+      {/* class={`w-full mb-4 py-2 px-4 bg-blue-500 text-white font-semibold rounded ${ */}
+
           <button
+          class={"py-2 px-4 rounded"}
             onClick={() => {
               if (chrome.runtime.openOptionsPage) {
                 chrome.runtime.openOptionsPage();
