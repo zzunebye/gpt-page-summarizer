@@ -161,7 +161,6 @@ export const App: FunctionComponent = () => {
         <div class={"flex flex-row mb-4 justify-between"}>
           <h1 class="text-xl">ChatGPT Summarizer</h1>
           <button
-            class=""
             onClick={() => {
               if (chrome.runtime.openOptionsPage) {
                 chrome.runtime.openOptionsPage();
