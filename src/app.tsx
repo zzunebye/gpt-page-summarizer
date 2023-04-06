@@ -14,7 +14,7 @@ export const App: FunctionComponent = () => {
   const [summary, setSummary] = useState("");
   const [summaryLength, setSummaryLength] = useState(100);
   const [targetLang, setTargetLang] = useState<LanguageCode>(LanguageCode.EN);
-  const [model, setModel] = useState(OpenAIModel.GPT_3_5_Turbo);
+  const [model] = useState(OpenAIModel.GPT_3_5_Turbo);
   const [isLoading, setLoading] = useState(false);
   const [hasSummarized, setHasSummarized] = useState(false);
   const toast = useToast();
@@ -67,7 +67,12 @@ export const App: FunctionComponent = () => {
 
           if (!article) {
             setLoading(false);
-            alert("Something went wrong.");
+            toast({
+              title: `Webpage is not supported to be summarized`,
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            });
             return;
           }
 
@@ -76,7 +81,7 @@ export const App: FunctionComponent = () => {
             toast({
               title: `Hard Limit for ${model}`,
               description: `Article is too long. Please try again with an article that is less than ${maxCodeLength} characters.`,
-              status: "success",
+              status: "error",
               duration: 5000,
               isClosable: true,
             });
