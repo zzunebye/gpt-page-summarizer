@@ -1,4 +1,5 @@
 import { FunctionComponent } from "preact";
+import { Spinner } from "@chakra-ui/react";
 
 const PrimaryButton: FunctionComponent<PrimaryButtonProps> = ({
   isLoading,
@@ -12,7 +13,7 @@ const PrimaryButton: FunctionComponent<PrimaryButtonProps> = ({
       }`}
       onClick={onClick}
     >
-      {children}
+      {isLoading ? <Spinner size="xs" /> : children}
     </button>
   );
 };
