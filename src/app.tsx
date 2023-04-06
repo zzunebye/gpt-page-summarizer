@@ -6,6 +6,8 @@ import * as chromeApi from "./services/chromeApi";
 import * as process from "process";
 import dotenv from "dotenv";
 import { languageCodeToString } from "./presenter";
+import PrimaryButton from "./components/PrimaryButton";
+import { ChakraProvider, useToast } from "@chakra-ui/react";
 
 export const App: FunctionComponent = () => {
   const [apiKey, setApiKey] = useState("");
@@ -15,6 +17,7 @@ export const App: FunctionComponent = () => {
   const [model, setModel] = useState(OpenAIModel.GPT_3_5_Turbo);
   const [isLoading, setLoading] = useState(false);
   const [hasSummarized, setHasSummarized] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     // Retrieve the API key from Chrome storage
@@ -52,6 +55,7 @@ export const App: FunctionComponent = () => {
     }
 
     const controller = new AbortController();
+
     chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
       const activeTab = tabs[0];
       try {
@@ -64,6 +68,35 @@ export const App: FunctionComponent = () => {
           if (!article) {
             setLoading(false);
             alert("Something went wrong.");
+            return;
+          }
+
+          if (article.length > maxCodeLength) {
+            setLoading(false);
+            toast({
+              title: `Hard Limit for ${model}`,
+              description: `Article is too long. Please try again with an article that is less than ${maxCodeLength} characters.`,
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+            });
+
+            chrome.notifications.getPermissionLevel(function (level) {
+              if (level === "granted") {
+                chrome.notifications.create(
+                  {
+                    type: "basic",
+                    title: `Hard Limit for ${model}`,
+                    message:
+                      "Article is too long. Please try again with an article that is less than ${maxCodeLength} characters",
+                    iconUrl: "icon.png",
+                  },
+                  function () {
+                    console.log("Notification created successfully.");
+                  }
+                );
+              }
+            });
             return;
           }
 
@@ -123,44 +156,40 @@ export const App: FunctionComponent = () => {
   };
 
   return (
-    <div class="p-4 w-96 flex flex-col" style={"height: 32rem"}>
-      <div class={"flex flex-row mb-4 justify-between"}>
-        <h1 class="text-xl">ChatGPT Summarizer</h1>
-        <button
-          class=""
-          onClick={() => {
-            if (chrome.runtime.openOptionsPage) {
-              chrome.runtime.openOptionsPage();
-            } else {
-              window.open(chrome.runtime.getURL("options.html"));
-            }
-          }}
-        >
-          Options
-        </button>
-      </div>
+    <ChakraProvider>
+      <div class="p-4 w-96 flex flex-col" style={"height: 32rem"}>
+        <div class={"flex flex-row mb-4 justify-between"}>
+          <h1 class="text-xl">ChatGPT Summarizer</h1>
+          <button
+            class=""
+            onClick={() => {
+              if (chrome.runtime.openOptionsPage) {
+                chrome.runtime.openOptionsPage();
+              } else {
+                window.open(chrome.runtime.getURL("options.html"));
+              }
+            }}
+          >
+            Options
+          </button>
+        </div>
 
-      <button
-        class={`w-full mb-4 py-2 px-4 bg-blue-500 text-white font-semibold rounded ${
-          isLoading ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-        onClick={isLoading ? () => {} : handleSummarizeClick}
-      >
-        {isLoading ? "Loading..." : "Summarize Article"}
-      </button>
-      <div class="border border-gray-300 rounded p-4 w-full flex flex-col flex-1 overflow-y-scroll">
-        <h2 class="text-lg mb-2">Summary:</h2>
-        {/* ;; if summary is empty, show placeholder message at the center of the div */}
-        <div class="flex flex-col flex-1">
-          {summary === "" && !hasSummarized ? (
-            <div class="flex flex-col items-center justify-center h-full">
-              <p class="text-gray-400 text-sm">No summary found.</p>
-            </div>
-          ) : (
-            <p class="font-base">{summary}</p>
-          )}
+        <PrimaryButton isLoading={isLoading} onClick={handleSummarizeClick}>
+          Summarize
+        </PrimaryButton>
+        <div class="border border-gray-300 rounded p-4 w-full flex flex-col flex-1 overflow-y-scroll">
+          <h2 class="text-lg mb-2">Summary:</h2>
+          <div class="flex flex-col flex-1">
+            {summary === "" && !hasSummarized ? (
+              <div class="flex flex-col items-center justify-center h-full">
+                <p class="text-gray-400 text-sm">No summary found</p>
+              </div>
+            ) : (
+              <p class="font-base">{summary}</p>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </ChakraProvider>
   );
 };
